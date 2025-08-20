@@ -32,7 +32,11 @@ jobs:
         - name: "Install dependencies"
           run: npm install
 
-
+        - name: "set-up artifacts"
+          uses: actions/upload-artifact@v3
+          with:
+            name: Build
+            path: dist
 
         - name: "Print message"
           run: echo "CI Pipeline is running for push event"
