@@ -36,3 +36,25 @@ jobs:
 
         - name: "Print message"
           run: echo "CI Pipeline is running for push event"
+
+
+  pull_request:
+    if: github.event_name == 'pull_request'
+    
+      
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
+
+    steps:
+        - name: "Checkout code"
+          uses: actions/checkout@v4    # Checkout the repository
+
+        - name: "set-up node js"
+          uses: actions/setup-node@v4
+          with:
+            node-version: "21"
+
+        - name: "Install dependencies"
+          run: npm install
