@@ -1,0 +1,64 @@
+# YAML = YAML Ain’t Markup Language
+
+# Human-readable data serialization format (like JSON but cleaner).
+
+# Used for configuration files.
+
+# 👉 Basic Rules:
+
+# .yml or .yaml extension
+
+# Case-sensitive
+
+# Uses indentation (spaces, not tabs!)
+
+# Key-value pairs: key: value
+
+# Lists: - item
+
+# Dictionaries: { key: value }
+
+
+
+# YAML Basics
+# Example 1: Key-Value
+
+name: Bishnu
+role: DevOps Engineer
+skills: YAML
+# Example 2: List
+projects:
+  - name: Project A
+    duration: 3 months
+  - name: Project B
+    duration: 6 months
+  - name: Project C
+    duration: 1 year
+# Example 3: Dictionary
+project_test:
+  e-commerce:
+    platform: Shopify
+    duration: 6 months
+  marketing_website:
+    platform: WordPress
+    duration: 3 months
+  mobile_app:
+    platform: React Native
+    duration: 1 year
+
+
+#Data Types in YAML
+#string
+
+user_name: "Bishnu"
+
+#number
+user_age: 30
+port: 3000
+
+#boolean
+is_active: true
+enable: false
+
+#null
+user_location: null
