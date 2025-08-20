@@ -39,7 +39,7 @@ jobs:
           uses: actions/upload-artifact@v4
           with:
             name: Build
-            path: workflow_Practice/dist
+            path: dist/
 
         - name: "Print message"
           run: echo "CI Pipeline is running for push event"
