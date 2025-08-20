@@ -13,7 +13,12 @@ on:
 jobs:
   Push_test:
     if: github.event_name == 'push'
+    
+      
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
 
     steps:
         - name: "Checkout code"
