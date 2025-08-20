@@ -1,0 +1,23 @@
+name: "CI pipeline"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  Push_test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: "Checkout code"
+          uses: actions/checkout@v4    # Checkout the repository
+
+        - name: "Print message"
+          run: echo "CI Pipeline is running for push event"
