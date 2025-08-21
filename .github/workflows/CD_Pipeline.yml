@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: "21"
 
+      - name: "list files"
+        run: ls -la
+
       - name: Install dependencies
         run: npm install
 
