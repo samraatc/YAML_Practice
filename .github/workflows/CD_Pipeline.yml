@@ -15,7 +15,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build
-          path: ./dist
+          path: Workflow_Practice/dist/
 
       - name: List files after download
         run: ls -la ./dist
