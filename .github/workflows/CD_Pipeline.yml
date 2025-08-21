@@ -18,7 +18,7 @@ jobs:
           path: Workflow_Practice/dist/
 
       - name: List files after download
-        run: ls -la ./dist
+        run: ls -la 
 
       - name: Deploy to Server
         run: |
