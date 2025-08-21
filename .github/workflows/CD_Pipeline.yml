@@ -36,8 +36,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.token }}
 
-      - name: List files after download
-        run: ls -la 
+      # - name: List files after download
+      #   run: ls -la 
 
       - name: Deploy to Server
         run: |
