@@ -10,6 +10,9 @@ jobs:
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }} # run only if CI succeeds
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Workflow_Practice    # Set the working directory if all files are present inside the directory
     steps:
 
       - name: "Checkout code"
