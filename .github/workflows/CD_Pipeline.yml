@@ -1,0 +1,71 @@
+name: "CD Pipeline"
+
+on:
+  workflow_run:
+    workflows: ["CI pipeline"]   # Triggered only after CI pipeline finishes
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # run only if CI succeeds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: Build
+          path: ./dist
+
+      - name: List files after download
+        run: ls -la ./dist
+
+      - name: Deploy to Server
+        run: |
+          echo "🚀 Deploying application..."
+          # Example deployment steps:
+          # scp -r ./dist user@server:/var/www/app
+          # ssh user@server "systemctl restart nginx"
+
+
+
+#CD pipeline to deploy to Vercel
+
+# name: "CD pipelie"
+
+# no:
+#   workflow_run:
+#     types:
+#       - completed
+
+#   workflow_dispatch:
+
+# jobs:
+#   Deploy_CD:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: "Checkout"
+#         uses: actions/checkout@v4
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with: 
+#           node-version: "21"
+
+#       - name: Install dependencies
+#         run: npm install
+
+
+
+#       - name: "vercel set-up"
+#         uses: npm install -g vercel
+
+#       - name: "download build artifacts"
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: build
+#           run-id: ${{ github.event.workflow_run.id }}
+#           github-token: ${{ secrets.token }}
+
+#       - name: "Deploy to production"
+#         run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --confirm --name=CI_CD_test
