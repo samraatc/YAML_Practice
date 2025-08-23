@@ -23,9 +23,6 @@ jobs:
         with:
           node-version: "21"
 
-      - name: List files
-        run: ls -la
-
       - name: Install dependencies
         run: npm install
 
@@ -44,8 +41,6 @@ jobs:
     needs: ci
     if: github.event_name == 'push' && needs.ci.result == 'success'
     runs-on: ubuntu-latest
-    # Remove the working-directory default for this job
-    # so we can control the paths more precisely
 
     steps:
       - name: Checkout code
@@ -60,21 +55,33 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./  # Download to the root of the workspace
+          path: ./downloaded-artifact/  # Download to a specific directory
 
-      - name: Verify downloaded files
+      - name: Examine artifact structure
         run: |
-          echo "Contents of root directory:"
-          ls -la
-          echo "Contents of Workflow_Practice directory:"
-          ls -la Workflow_Practice/
+          echo "Artifact structure:"
+          find ./downloaded-artifact -type f -o -type d | sort
+          echo "Contents of downloaded-artifact:"
+          ls -la downloaded-artifact/
 
       - name: Move artifact to correct location
         run: |
-          # Move the downloaded dist folder to the correct location
-          mv dist/ Workflow_Practice/dist/
-          echo "After moving:"
+          # Check if the dist folder exists in the downloaded artifact
+          if [ -d "downloaded-artifact/dist" ]; then
+            mv downloaded-artifact/dist/ Workflow_Practice/
+            echo "Moved dist folder to Workflow_Practice/"
+          else
+            echo "No dist folder found in artifact. Available content:"
+            ls -la downloaded-artifact/
+            exit 1
+          fi
+
+      - name: Verify final structure
+        run: |
+          echo "Final Workflow_Practice contents:"
           ls -la Workflow_Practice/
+          echo "Dist folder contents:"
+          ls -la Workflow_Practice/dist/
 
       - name: Deploy to server
         run: echo "🚀 Deploying application..."
