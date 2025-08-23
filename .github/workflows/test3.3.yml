@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: Workflow_Practice
 
     steps:
       - name: Checkout code
@@ -35,7 +35,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: frontend/dist/   # change if your build folder is Deploy instead
+          path: Workflow_Practice/dist/   # change if your build folder is Deploy instead
+
+
+      - name: list all files
+        run: ls -la Workflow_Practice/
 
   CD_Push:
     needs: CI_push
@@ -55,10 +59,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build
-          path: ./frontend/dist/   # same as upload path
+          path: ./Workflow_Practice/dist/   # same as upload path
 
       - name: Verify build files
-        run: ls -la ./frontend/dist
+        run: ls -la ./Workflow_Practice/dist
 
       - name: Deploying to Vercel
         run: echo "🚀 Deploying the project"
