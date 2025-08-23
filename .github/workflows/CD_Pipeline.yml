@@ -5,6 +5,7 @@ on:
     workflows: ["CI pipeline"]   # Triggered only after CI pipeline finishes
     types:
       - completed
+    workflow_dispatch:    # Allow manual triggering of the workflow
 
 jobs:
   deploy:
@@ -32,7 +33,7 @@ jobs:
       - name: Download Artifact from CI
         uses: actions/download-artifact@v4
         with:
-          name: Build
+          name: build
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.token }}
 
