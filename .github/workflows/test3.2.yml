@@ -125,9 +125,9 @@ jobs:
           # Show contents of the working directory
           echo "Final Workflow_Practice contents:"
           ls -la Workflow_Practice/
-          # Show contents of the dist directory
-          echo "Dist folder contents:"
-          ls -la Workflow_Practice/dist/
+          # Show contents of the build-artifact directory
+          echo "Build artifact  contents:"
+          ls -la Workflow_Practice/build-artifact/
 
       # Step 7: Deployment to server (placeholder for actual deployment)
       - name: Deploy to server
