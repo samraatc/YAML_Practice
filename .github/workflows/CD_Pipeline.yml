@@ -1,4 +1,5 @@
 name: "CD Pipeline"
+name: "CD Pipeline"
 
 on:
   workflow_run:
@@ -17,12 +18,45 @@ jobs:
         working-directory: Workflow_Practice
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Download artifact from CI
+        uses: actions/github-script@v7
         with:
-          name: build-artifact
-          path: Workflow_Practice/dist/
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Get artifacts from the triggering workflow run
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            
+            // Find the build artifact
+            const buildArtifact = artifacts.data.artifacts.find(
+              artifact => artifact.name === 'build-artifact'
+            );
+            
+            if (!buildArtifact) {
+              throw new Error('Build artifact not found');
+            }
+            
+            // Download the artifact
+            const download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: buildArtifact.id,
+              archive_format: 'zip',
+            });
+            
+            // Extract the zip file
+            const fs = require('fs');
+            const path = require('path');
+            fs.writeFileSync('/tmp/artifact.zip', Buffer.from(download.data));
+            
+            // Extract to working directory
+            const extract = require('extract-zip');
+            await extract('/tmp/artifact.zip', { dir: path.join(process.env.GITHUB_WORKSPACE, 'Workflow_Practice') });
+
+      - name: Verify downloaded files
+        run: ls -la Workflow_Practice/
 
       - name: Deploy to server
         run: echo "🚀 Deploying application..."

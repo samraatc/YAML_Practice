@@ -72,8 +72,6 @@
 
 
 
-
-
 name: "CI Pipeline"
 
 on:
@@ -84,7 +82,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -102,11 +100,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
+      - name: Build project (push events only)
+        if: github.event_name == 'push'
         run: npm run build
 
-      - name: Upload build artifact
-        if: success() && github.event_name == 'push'
+      - name: Upload build artifact (push events only)
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
