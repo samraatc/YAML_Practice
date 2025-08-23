@@ -1,87 +1,139 @@
+# Name of the workflow that appears in GitHub Actions UI
 name: "CI/CD Pipeline"
 
+# Event triggers that start this workflow
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+  push:                    # Trigger on code pushes
+    branches: [main]       # Only to the main branch
+  pull_request:            # Trigger on pull requests
+    branches: [main]       # Only those targeting the main branch
+  workflow_dispatch:       # Allow manual triggering from GitHub UI
 
+# Jobs define the workflow's execution units
 jobs:
+  # Continuous Integration job - builds and tests code
   ci:
+    # Run this job on the latest Ubuntu runner
     runs-on: ubuntu-latest
+    
+    # Default settings for all steps in this job
     defaults:
       run:
+        # All commands will execute in this directory
         working-directory: Workflow_Practice
 
+    # Steps are sequential tasks within the job
     steps:
+      # Step 1: Checkout repository code
       - name: Checkout code
+        # Official GitHub Action for checking out code
         uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js environment
       - name: Setup Node.js
+        # Official GitHub Action for setting up Node.js
         uses: actions/setup-node@v4
         with:
+          # Specify the Node.js version to use
           node-version: "21"
 
+      # Step 3: Install project dependencies
       - name: Install dependencies
+        # Run npm install to install all package.json dependencies
         run: npm install
 
+      # Step 4: Build the project (only for push events, not PRs)
       - name: Build project (push events only)
+        # Conditional execution: only run this step on push events
         if: github.event_name == 'push'
+        # Execute the build script defined in package.json
         run: npm run build
 
+      # Step 5: Upload build artifacts for deployment
       - name: Upload build artifact (push events only)
+        # Conditional execution: only run this step on push events
         if: github.event_name == 'push'
+        # Official GitHub Action for uploading artifacts
         uses: actions/upload-artifact@v4
         with:
+          # Name to identify this artifact
           name: build-artifact
+          # Path to the files to upload (built output)
           path: Workflow_Practice/dist/
 
+  # Continuous Deployment job - deploys built artifacts
   cd:
+    # This job depends on the CI job completing successfully
     needs: ci
+    # Conditions for running this job:
+    # 1. Must be a push event (not a PR)
+    # 2. The CI job must have succeeded
     if: github.event_name == 'push' && needs.ci.result == 'success'
+    # Run this job on the latest Ubuntu runner
     runs-on: ubuntu-latest
 
+    # Steps for the deployment job
     steps:
+      # Step 1: Checkout repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js (if needed for deployment scripts)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "21"
 
+      # Step 3: Download artifacts from the CI job
       - name: Download artifact from CI
         uses: actions/download-artifact@v4
         with:
+          # Name of the artifact to download (must match upload name)
           name: build-artifact
-          path: ./downloaded-artifact/  # Download to a specific directory
+          # Directory where to place the downloaded artifact
+          path: ./downloaded-artifact/
 
+      # Step 4: Debugging - examine the downloaded artifact structure
       - name: Examine artifact structure
         run: |
+          # List all files and directories in the artifact
           echo "Artifact structure:"
           find ./downloaded-artifact -type f -o -type d | sort
+          # Show detailed listing of the artifact directory
           echo "Contents of downloaded-artifact:"
           ls -la downloaded-artifact/
 
-      - name: Move artifact to correct location
-        run: |
-          # Check if the dist folder exists in the downloaded artifact
-          if [ -d "downloaded-artifact/dist" ]; then
-            mv downloaded-artifact/dist/ Workflow_Practice/
-            echo "Moved dist folder to Workflow_Practice/"
-          else
-            echo "No dist folder found in artifact. Available content:"
-            ls -la downloaded-artifact/
-            exit 1
-          fi
+      # # Step 5: Move artifacts to the correct location for deployment
+      # - name: Move artifact to correct location
+      #   run: |
+      #     # Check if the expected dist directory exists in the artifact
+      #     if [ -d "downloaded-artifact/dist" ]; then
+      #       # Move the dist directory to where it's expected
+      #       mv downloaded-artifact/dist/ Workflow_Practice/
+      #       echo "Moved dist folder to Workflow_Practice/"
+      #     else
+      #       # If dist directory doesn't exist, show what's available
+      #       echo "No dist folder found in artifact. Available content:"
+      #       ls -la downloaded-artifact/
+      #       # Exit with error code to fail the job
+      #       exit 1
+      #     fi
 
+      # Step 6: Verify the final file structure is correct
       - name: Verify final structure
         run: |
+          # Show contents of the working directory
           echo "Final Workflow_Practice contents:"
           ls -la Workflow_Practice/
+          # Show contents of the dist directory
           echo "Dist folder contents:"
           ls -la Workflow_Practice/dist/
 
+      # Step 7: Deployment to server (placeholder for actual deployment)
       - name: Deploy to server
         run: echo "🚀 Deploying application..."
+        # Replace this with actual deployment commands:
+        # Examples:
+        # - scp -r ./dist user@server:/var/www/app
+        # - ssh user@server "systemctl restart nginx"
+        # - Use a deployment action like FTP-deploy, SSH-deploy, etc.
