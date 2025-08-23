@@ -106,21 +106,21 @@ jobs:
           echo "Contents of downloaded-artifact:"
           ls -la downloaded-artifact/
 
-      # # Step 5: Move artifacts to the correct location for deployment
-      # - name: Move artifact to correct location
-      #   run: |
-      #     # Check if the expected dist directory exists in the artifact
-      #     if [ -d "downloaded-artifact/dist" ]; then
-      #       # Move the dist directory to where it's expected
-      #       mv downloaded-artifact/dist/ Workflow_Practice/
-      #       echo "Moved dist folder to Workflow_Practice/"
-      #     else
-      #       # If dist directory doesn't exist, show what's available
-      #       echo "No dist folder found in artifact. Available content:"
-      #       ls -la downloaded-artifact/
-      #       # Exit with error code to fail the job
-      #       exit 1
-      #     fi
+      # Step 5: Move artifacts to the correct location for deployment
+      - name: Move artifact to correct location
+        run: |
+          # Check if the expected dist directory exists in the artifact
+          if [ -d "downloaded-artifact/dist" ]; then
+            # Move the dist directory to where it's expected
+            mv downloaded-artifact/dist/ Workflow_Practice/
+            echo "Moved dist folder to Workflow_Practice/"
+          else
+            # If dist directory doesn't exist, show what's available
+            echo "No dist folder found in artifact. Available content:"
+            ls -la downloaded-artifact/
+            # Exit with error code to fail the job
+            exit 1
+          fi
 
       # Step 6: Verify the final file structure is correct
       - name: Verify final structure
