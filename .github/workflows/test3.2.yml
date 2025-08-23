@@ -1,0 +1,81 @@
+name: "CI/CD Pipeline"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Workflow_Practice
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "21"
+
+      - name: List files
+        run: ls -la
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project (push events only)
+        if: github.event_name == 'push'
+        run: npm run build
+
+      - name: Upload build artifact (push events only)
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: Workflow_Practice/dist/
+
+      - name: Print message
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "CI Pipeline is running for push event"
+          else
+            echo "CI Pipeline is running for pull request event"
+          fi
+
+  cd:
+    needs: ci
+    if: github.event_name == 'push' && needs.ci.result == 'success'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Workflow_Practice
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "21"
+
+      - name: Download artifact from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: Workflow_Practice/dist/
+
+      - name: Verify downloaded files
+        run: ls -la Workflow_Practice/dist/
+
+      - name: Deploy to server
+        run: echo "🚀 Deploying application..."
+        # Add your actual deployment commands here:
+        # scp -r ./dist user@server:/var/www/app
+        # ssh user@server "systemctl restart nginx"
