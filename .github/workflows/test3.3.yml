@@ -39,7 +39,7 @@ jobs:
 
 
       - name: list all files
-        run: ls -la Workflow_Practice/
+        run: ls -la ./Workflow_Practice/
 
   CD_Push:
     needs: CI_push
