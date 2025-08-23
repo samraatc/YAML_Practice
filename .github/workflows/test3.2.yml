@@ -40,21 +40,12 @@ jobs:
           name: build-artifact
           path: Workflow_Practice/dist/
 
-      - name: Print message
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "CI Pipeline is running for push event"
-          else
-            echo "CI Pipeline is running for pull request event"
-          fi
-
   cd:
     needs: ci
     if: github.event_name == 'push' && needs.ci.result == 'success'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Workflow_Practice
+    # Remove the working-directory default for this job
+    # so we can control the paths more precisely
 
     steps:
       - name: Checkout code
@@ -69,13 +60,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: Workflow_Practice/dist/
+          path: ./  # Download to the root of the workspace
 
       - name: Verify downloaded files
-        run: ls -la Workflow_Practice/dist/
+        run: |
+          echo "Contents of root directory:"
+          ls -la
+          echo "Contents of Workflow_Practice directory:"
+          ls -la Workflow_Practice/
+
+      - name: Move artifact to correct location
+        run: |
+          # Move the downloaded dist folder to the correct location
+          mv dist/ Workflow_Practice/dist/
+          echo "After moving:"
+          ls -la Workflow_Practice/
 
       - name: Deploy to server
         run: echo "🚀 Deploying application..."
-        # Add your actual deployment commands here:
-        # scp -r ./dist user@server:/var/www/app
-        # ssh user@server "systemctl restart nginx"
