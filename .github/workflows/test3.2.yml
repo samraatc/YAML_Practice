@@ -96,41 +96,41 @@ jobs:
       - name: "build-artifact file test"
         run: ls -la ./Workflow_Practice
 
-      # Step 4: Debugging - examine the downloaded artifact structure
-      - name: Examine artifact structure
-        run: |
-          # List all files and directories in the artifact
-          echo "Artifact structure:"
-          find ./downloaded-artifact -type f -o -type d | sort
-          # Show detailed listing of the artifact directory
-          echo "Contents of downloaded-artifact:"
-          ls -la downloaded-artifact/
+      # # Step 4: Debugging - examine the downloaded artifact structure
+      # - name: Examine artifact structure
+      #   run: |
+      #     # List all files and directories in the artifact
+      #     echo "Artifact structure:"
+      #     find ./downloaded-artifact -type f -o -type d | sort
+      #     # Show detailed listing of the artifact directory
+      #     echo "Contents of downloaded-artifact:"
+      #     ls -la downloaded-artifact/
 
-      # Step 5: Move artifacts to the correct location for deployment
-      - name: Move artifact to correct location
-        run: |
-          # Check if the expected dist directory exists in the artifact
-          if [ -d "downloaded-artifact/dist" ]; then
-            # Move the dist directory to where it's expected
-            mv downloaded-artifact/dist/ Workflow_Practice/
-            echo "Moved dist folder to Workflow_Practice/"
-          else
-            # If dist directory doesn't exist, show what's available
-            echo "No dist folder found in artifact. Available content:"
-            ls -la downloaded-artifact/
-            # Exit with error code to fail the job
-            exit 1
-          fi
+      # # Step 5: Move artifacts to the correct location for deployment
+      # - name: Move artifact to correct location
+      #   run: |
+      #     # Check if the expected dist directory exists in the artifact
+      #     if [ -d "downloaded-artifact/dist" ]; then
+      #       # Move the dist directory to where it's expected
+      #       mv downloaded-artifact/dist/ Workflow_Practice/
+      #       echo "Moved dist folder to Workflow_Practice/"
+      #     else
+      #       # If dist directory doesn't exist, show what's available
+      #       echo "No dist folder found in artifact. Available content:"
+      #       ls -la downloaded-artifact/
+      #       # Exit with error code to fail the job
+      #       exit 1
+      #     fi
 
-      # Step 6: Verify the final file structure is correct
-      - name: Verify final structure
-        run: |
-          # Show contents of the working directory
-          echo "Final Workflow_Practice contents:"
-          ls -la Workflow_Practice/
-          # Show contents of the build-artifact directory
-          echo "Build artifact  contents:"
-          ls -la Workflow_Practice/build-artifact/
+      # # Step 6: Verify the final file structure is correct
+      # - name: Verify final structure
+      #   run: |
+      #     # Show contents of the working directory
+      #     echo "Final Workflow_Practice contents:"
+      #     ls -la Workflow_Practice/
+      #     # Show contents of the build-artifact directory
+      #     echo "Build artifact  contents:"
+      #     ls -la Workflow_Practice/build-artifact/
 
       # Step 7: Deployment to server (placeholder for actual deployment)
       - name: Deploy to server
