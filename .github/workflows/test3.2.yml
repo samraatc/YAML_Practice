@@ -99,7 +99,7 @@ jobs:
           path: ./downloaded-artifact/
 
       - name: "build-artifact file test"
-        run: ls -la ./Workflow_Practice
+        run: ls -la 
 
       # # Step 4: Debugging - examine the downloaded artifact structure
       # - name: Examine artifact structure

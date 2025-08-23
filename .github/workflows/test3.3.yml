@@ -38,8 +38,8 @@ jobs:
           path: Workflow_Practice/dist/   # change if your build folder is Deploy instead
 
 
-      # - name: list all files
-      #   run: ls -la ./Workflow_Practice/
+      - name: list all files
+        run: ls -la 
 
   CD_Push:
     needs: CI_push
