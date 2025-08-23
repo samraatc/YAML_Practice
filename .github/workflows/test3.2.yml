@@ -61,6 +61,11 @@ jobs:
           # Path to the files to upload (built output)
           path: Workflow_Practice/dist/
 
+
+
+      - name: list all files
+        run: ls -la ./Workflow_Practice/
+
   # Continuous Deployment job - deploys built artifacts
   cd:
     # This job depends on the CI job completing successfully
