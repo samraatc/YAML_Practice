@@ -1,71 +1,113 @@
-name: "CI pipeline"
+# name: "CI pipeline"
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+#   workflow_dispatch:
+
+# jobs:
+#   Push_test:
+#     if: github.event_name == 'push'
+    
+      
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
+
+#     steps:
+#         - name: "Checkout code"
+#           uses: actions/checkout@v4    # Checkout the repository
+
+#         - name: "set-up node js"
+#           uses: actions/setup-node@v4
+#           with:
+#             node-version: "21"
+
+#         - name: "list all directory"
+#           run: ls -la
+
+#         - name: "Install dependencies"
+#           run: npm install
+
+#         - name: "build the project"
+#           run: npm run build
+
+#         - name: "set-up artifacts"
+#           uses: actions/upload-artifact@v4
+#           with:
+#             name: build
+#             path:  Workflow_Practice/dist/
+
+#         - name: "Print message"
+#           run: echo "CI Pipeline is running for push event"
+
+
+#   pull_request:
+#     if: github.event_name == 'pull_request'
+    
+      
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
+
+#     steps:
+#         - name: "Checkout code"
+#           uses: actions/checkout@v4    # Checkout the repository
+
+#         - name: "set-up node js"
+#           uses: actions/setup-node@v4
+#           with:
+#             node-version: "21"
+
+#         - name: "Install dependencies"
+#           run: npm install
+
+
+
+
+
+
+name: "CI Pipeline"
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  Push_test:
-    if: github.event_name == 'push'
-    
-      
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
+        working-directory: Workflow_Practice
 
     steps:
-        - name: "Checkout code"
-          uses: actions/checkout@v4    # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: "set-up node js"
-          uses: actions/setup-node@v4
-          with:
-            node-version: "21"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "21"
 
-        - name: "list all directory"
-          run: ls -la
+      - name: Install dependencies
+        run: npm install
 
-        - name: "Install dependencies"
-          run: npm install
+      - name: Build project
+        run: npm run build
 
-        - name: "build the project"
-          run: npm run build
-
-        - name: "set-up artifacts"
-          uses: actions/upload-artifact@v4
-          with:
-            name: build
-            path:  Workflow_Practice/dist/
-
-        - name: "Print message"
-          run: echo "CI Pipeline is running for push event"
-
-
-  pull_request:
-    if: github.event_name == 'pull_request'
-    
-      
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Workflow_Practice    # Set the working directory if all file is present inside the directory
-
-    steps:
-        - name: "Checkout code"
-          uses: actions/checkout@v4    # Checkout the repository
-
-        - name: "set-up node js"
-          uses: actions/setup-node@v4
-          with:
-            node-version: "21"
-
-        - name: "Install dependencies"
-          run: npm install
-
+      - name: Upload build artifact
+        if: success() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: Workflow_Practice/dist/

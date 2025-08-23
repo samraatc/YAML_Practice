@@ -2,50 +2,86 @@ name: "CD Pipeline"
 
 on:
   workflow_run:
-    workflows: ["CI pipeline"]   # Triggered only after CI pipeline finishes
-    types:
-      - completed
-    workflow_dispatch:    # Allow manual triggering of the workflow
+    workflows: ["CI Pipeline"]
+    types: [completed]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} # run only if CI succeeds
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Workflow_Practice    # Set the working directory if all files are present inside the directory
+        working-directory: Workflow_Practice
+
     steps:
-
-      - name: "Checkout code"
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "21"
-
-      - name: "list files"
-        run: ls -la
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Download Artifact from CI
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.token }}
+          name: build-artifact
+          path: Workflow_Practice/dist/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: List files after download
-      #   run: ls -la 
+      - name: Deploy to server
+        run: echo "🚀 Deploying application..."
 
-      - name: Deploy to Server
-        run: |
-          echo "🚀 Deploying application..."
-          # Example deployment steps:
-          # scp -r ./dist user@server:/var/www/app
-          # ssh user@server "systemctl restart nginx"
+
+
+
+
+
+
+
+# name: "CD Pipeline"
+
+# on:
+#   workflow_run:
+#     workflows: ["CI pipeline"]   # Triggered only after CI pipeline finishes
+#     types:
+#       - completed
+#     workflow_dispatch:    # Allow manual triggering of the workflow
+
+# jobs:
+#   deploy:
+#     if: ${{ github.event.workflow_run.conclusion == 'success' }} # run only if CI succeeds
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         working-directory: Workflow_Practice    # Set the working directory if all files are present inside the directory
+#     steps:
+
+#       - name: "Checkout code"
+#         uses: actions/checkout@v4
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "21"
+
+#       - name: "list files"
+#         run: ls -la
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Download Artifact from CI
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: build
+#           run-id: ${{ github.event.workflow_run.id }}
+#           github-token: ${{ secrets.token }}
+
+#       # - name: List files after download
+#       #   run: ls -la 
+
+#       - name: Deploy to Server
+#         run: |
+#           echo "🚀 Deploying application..."
+#           # Example deployment steps:
+#           # scp -r ./dist user@server:/var/www/app
+#           # ssh user@server "systemctl restart nginx"
 
 
 
