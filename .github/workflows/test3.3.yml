@@ -1,0 +1,64 @@
+name: CI_CD_Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  CI_push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '21'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: frontend/dist/   # change if your build folder is Deploy instead
+
+  CD_Push:
+    needs: CI_push
+    if: github.event_name == 'push' && needs.CI_push.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./frontend/dist/   # same as upload path
+
+      - name: Verify build files
+        run: ls -la ./frontend/dist
+
+      - name: Deploying to Vercel
+        run: echo "🚀 Deploying the project"
