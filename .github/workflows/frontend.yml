@@ -1,4 +1,4 @@
-name: CI_CD_Pipeline
+name: CI_CD_Pipeline Frontend
 
 on:
   push:
@@ -11,10 +11,10 @@ jobs:
   CI_push:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-
     defaults:
       run:
-        working-directory: Workflow_Practice
+        working-directory: frontend
+    environment: Production
 
     steps:
       - name: Checkout code
@@ -28,44 +28,42 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
-        run: npm run build
+      - name: Create .env file
+        run: |
+          echo "VITE_API_URL=${{ secrets.BACKEND_API }}" > .env
 
-      - name: list all files
-        run: ls -la 
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Build project with Vercel
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: Workflow_Practice/dist/   # change if your build folder is Deploy instead
-
-
-      - name: list all files
-        run: ls -la 
+          name: vercel-output
+          path: frontend/.vercel/output
 
   CD_Push:
     needs: CI_push
     if: github.event_name == 'push' && needs.CI_push.result == 'success'
     runs-on: ubuntu-latest
+    environment: Production
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '21'
-
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
-          path: ./Workflow_Practice/dist/   # same as upload path
+          name: vercel-output
+          path: frontend/.vercel/output
 
-      - name: Verify build files
-        run: ls -la ./Workflow_Practice/dist
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
-      - name: Deploying to Vercel
-        run: echo "🚀 Deploying the project"
+      - name: Deploy to Vercel
+        run: |
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        working-directory: frontend

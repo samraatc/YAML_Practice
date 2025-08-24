@@ -64,7 +64,7 @@ jobs:
 
 
       - name: list all files
-        run: ls -la ./Workflow_Practice/
+        run: ls -la 
 
   # Continuous Deployment job - deploys built artifacts
   cd:
